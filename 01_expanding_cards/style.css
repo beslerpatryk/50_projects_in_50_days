@@ -1,11 +1,11 @@
-@import url('https://fonts.googleapis.com/css2?family=Muli:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Mulish&display=swap');
 
 * {
   box-sizing: border-box;
 }
 
 body {
-  font-family: 'Muli', sans-serif;
+  font-family: 'Mulish', sans-serif;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -20,7 +20,7 @@ body {
 }
 
 .panel {
-  background-size: auto 100%;
+  background-size: 100%;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -41,17 +41,23 @@ body {
   left: 20px;
   margin: 0;
   opacity: 0;
+  text-shadow: 0px 1px 2px black;
 }
 
 .panel.active {
-  flex: 5;
+  background-size: auto;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  flex: 4;
 }
 
 .panel.active h3 {
   opacity: 1;
+  transition: opacity 0.3s ease-in 0.6s;
 }
 
-@media (max-width: 400px) {
+@media (max-width: 600px) {
   .container {
     width: 100vw;
   }
@@ -59,5 +65,9 @@ body {
   .panel:nth-of-type(4),
   .panel:nth-of-type(5) {
     display: none;
+  }
+
+  .panel h3 {
+    font-size: 16px;
   }
 }

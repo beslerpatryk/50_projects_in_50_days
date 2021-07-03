@@ -45,10 +45,6 @@ body {
 }
 
 .panel.active {
-  background-size: auto;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
   flex: 4;
 }
 

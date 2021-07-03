@@ -11,7 +11,6 @@ next.addEventListener('click', () =>{
     if(currentActive > circles.length){
         currentActive = circles.length
     }
-    console.log(currentActive)
     update()
 })
 

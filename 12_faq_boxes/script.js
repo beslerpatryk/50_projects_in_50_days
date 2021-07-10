@@ -1,7 +1,8 @@
-const button = document.querySelectorAll('.faq-toggle')
+const card = document.querySelectorAll('.faq')
 
-button.forEach(toggle => {
-    toggle.addEventListener('click', ()=> {
-        toggle.parentNode.classList.toggle('active')
+card.forEach(toggle => {
+    toggle.addEventListener('click', () => {
+        toggle.classList.toggle('active')
     })
-});
+})
+

@@ -43,6 +43,7 @@ header {
 main {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
 }
 
 .movie {
@@ -62,6 +63,7 @@ main {
 .movie-info {
   color: #eee;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: space-between;
   padding: 0.5rem 1rem 1em;
@@ -69,6 +71,7 @@ main {
 }
 
 .movie-info h3 {
+  align-self: flex-start;
   margin-top: 0;
 }
 
@@ -77,6 +80,7 @@ main {
   padding: 0.25rem 0.5rem;
   border-radius: 3px;
   font-weight: bold;
+  align-self: flex-end;
 }
 
 .movie-info span.green {

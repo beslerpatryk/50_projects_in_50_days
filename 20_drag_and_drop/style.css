@@ -34,6 +34,12 @@ body {
   border: solid 5px #ccc;
 }
 
+.hover {
+  background-color: #333;
+  border-color: #fff;
+  border-style: dashed;
+}
+
 @media (max-width: 800px) {
   body {
     flex-direction: column;

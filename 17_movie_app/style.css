@@ -243,3 +243,21 @@ ul li {
 .actor-info {
 	margin-left: 0.5rem;
 }
+
+.load-more-btn {
+	flex-basis: 50vw;
+	padding: 1rem;
+}
+
+footer {
+	font-size: 0.8rem;
+	text-align: right;
+	color: white;
+	margin-right: 2rem;
+	margin-bottom: 0.5rem;
+}
+
+footer a {
+	color: #97c4ff;
+	text-decoration: none;
+}

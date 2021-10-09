@@ -9,6 +9,8 @@ const form = document.getElementById('form')
 const search = document.getElementById('search')
 const homeBtn = document.getElementById('home-btn')
 
+let moviePages = 1
+
 //Get initial movies
 getMovies(API_URL)
 homeBtn.addEventListener('click', show)
@@ -22,12 +24,20 @@ function show(){
     })
 }
 
+
+
 async function getMovies(url) {
     const res = await fetch(url)
     const data = await res.json()
-
     showMovies(data.results)
 }
+
+async function getMoreMovies(url){
+    const res = await fetch(url)
+    const data = await res.json()
+    appendPage(data.results)
+}
+
 
 async function getDetails(movieId) {
     const res1 = await fetch(`https://api.themoviedb.org/3/movie/${movieId}?api_key=3fd2be6f0c70a2a598f084ddfb75487c&language=en-US`)
@@ -42,8 +52,47 @@ async function getDetails(movieId) {
     const res4 = await fetch(`https://api.themoviedb.org/3/movie/${movieId}/credits?api_key=3fd2be6f0c70a2a598f084ddfb75487c&`)
     const data4 = await res4.json()
 
-
     showDetails(data1, data2, data3, data4)
+}
+
+async function appendPage(movies){
+    movies.forEach((movie,idx) =>{
+        const { title, id, poster_path, vote_average, overview, release_date} = movie
+        const movieEl = document.createElement('div')
+        movieEl.classList.add('movie') 
+
+        let overviewShort = getFirstFour(overview)
+        movieEl.innerHTML = 
+        `
+            <div class="movie-card">
+                <img class="poster" src="${IMG_PATH + poster_path}" alt="${title}">
+                 <div class="overview">
+                    <h3>Overview</h3>
+                    ${overviewShort}
+                </div>
+                <span class="${getClassByRate(vote_average)}">${checkVote(vote_average*10)}</span>
+                <div class="movie-info">
+                    <h3>${title}</h3>
+                    <h4>${release_date}</h4>
+                </div>                
+            </div>
+        `
+        main.appendChild(movieEl)
+
+        const poster = document.querySelectorAll(".poster")
+        poster[idx].addEventListener('click', ()=> {
+            getDetails(id);
+        },{once:true})
+
+    })
+        const loadMoreBtn = document.createElement('button')
+        loadMoreBtn.classList.add('load-more-btn')
+        loadMoreBtn.addEventListener('click', () => {
+            moviePages++
+            getMoreMovies(`https://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&api_key=3fd2be6f0c70a2a598f084ddfb75487c&page=${moviePages}`);
+        })
+        loadMoreBtn.innerHTML = "Load More"
+        main.appendChild(loadMoreBtn)
 }
 
 function showMovies(movies){
@@ -67,7 +116,7 @@ function showMovies(movies){
                 <div class="movie-info">
                     <h3>${title}</h3>
                     <h4>${release_date}</h4>
-                </div>
+                </div>                
             </div>
         `
         main.appendChild(movieEl)
@@ -78,6 +127,14 @@ function showMovies(movies){
         },{once:true})
 
     })
+        const loadMoreBtn = document.createElement('button')
+        loadMoreBtn.classList.add('load-more-btn')
+        loadMoreBtn.addEventListener('click', () => {
+            moviePages++
+            getMoreMovies(`https://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&api_key=3fd2be6f0c70a2a598f084ddfb75487c&page=${moviePages}`);
+        })
+        loadMoreBtn.innerHTML = "Load More"
+        main.appendChild(loadMoreBtn)
 }
 
 function showDetails(details,images,videos,credits){
@@ -160,20 +217,6 @@ function showDetails(details,images,videos,credits){
 
 }
 
-function makeCreditList(credits){
-    let out = ""
-    for(let i = 0; i < 5; i++){
-        out += `<li class="credit-card">
-                    <img class="actor-photo" src="${CREDIT_IMG_PATH + credits.cast[i].profile_path}" alt="${credits.cast[i].name}">
-                   <div class="actor-info">
-                        <h5>${credits.cast[i].name}</h5>
-                        <h6>${credits.cast[i].character}</h6>
-                   </div>
-                </li>`
-    }
-    return out
-}
-
 function showTrailer(){
     const trailer = document.getElementById("trailer")
     const frame = document.getElementById('frame')
@@ -188,11 +231,22 @@ function showTrailer(){
     })
 }
 
+function makeCreditList(credits){
+    let out = ""
+    for(let i = 0; i < 5; i++){
+        out += `<li class="credit-card">
+                    <img class="actor-photo" src="${CREDIT_IMG_PATH + credits.cast[i].profile_path}" alt="${credits.cast[i].name}">
+                   <div class="actor-info">
+                        <h5>${credits.cast[i].name}</h5>
+                        <h6>${credits.cast[i].character}</h6>
+                   </div>
+                </li>`
+    }
+    return out
+}
+
 function formatRuntime(runtime){
-
     return Math.floor(runtime/60) + "h " + `${runtime%60}` + "min"
-
-    // return full hours and rest of minutes
 }
 
 

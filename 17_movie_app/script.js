@@ -22,7 +22,6 @@ function show(){
     })
 }
 
-
 async function getMovies(url) {
     const res = await fetch(url)
     const data = await res.json()
@@ -31,7 +30,6 @@ async function getMovies(url) {
 }
 
 async function getDetails(movieId) {
-    console.log(movieId)
     const res1 = await fetch(`https://api.themoviedb.org/3/movie/${movieId}?api_key=3fd2be6f0c70a2a598f084ddfb75487c&language=en-US`)
     const data1 = await res1.json()
 
@@ -51,7 +49,7 @@ async function getDetails(movieId) {
 function showMovies(movies){
     main.innerHTML = ''
 
-    movies.forEach((movie) =>{
+    movies.forEach((movie,idx) =>{
         const { title, id, poster_path, vote_average, overview, release_date} = movie
         const movieEl = document.createElement('div')
         movieEl.classList.add('movie') 
@@ -60,7 +58,7 @@ function showMovies(movies){
         movieEl.innerHTML = 
         `
             <div class="movie-card">
-                <img onclick="getDetails(${id})" src="${IMG_PATH + poster_path}" alt="${title}">
+                <img class="poster" src="${IMG_PATH + poster_path}" alt="${title}">
                  <div class="overview">
                     <h3>Overview</h3>
                     ${overviewShort}
@@ -72,12 +70,18 @@ function showMovies(movies){
                 </div>
             </div>
         `
-
         main.appendChild(movieEl)
+
+        const poster = document.querySelectorAll(".poster")
+        poster[idx].addEventListener('click', ()=> {
+            getDetails(id);
+        },{once:true})
+
     })
 }
 
 function showDetails(details,images,videos,credits){
+    
     const popularMovies = document.querySelectorAll(".movie")
     popularMovies.forEach(card => {
         card.style.display = "none";

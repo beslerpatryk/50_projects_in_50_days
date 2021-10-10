@@ -16,12 +16,12 @@ getMovies(API_URL)
 homeBtn.addEventListener('click', show)
 
 function show(){
-    const detailCard = document.querySelector(".movie-detail")
-    detailCard.remove()
-    const popularMovies = document.querySelectorAll(".movie")
-    popularMovies.forEach(card => {
-        card.style.display = "initial";
+    moviePages = 1
+    const detailCard = document.querySelectorAll(".movie-detail")
+    detailCard.forEach(card => {
+        card.remove()
     })
+    getMovies(API_URL)
 }
 
 
@@ -55,7 +55,10 @@ async function getDetails(movieId) {
     showDetails(data1, data2, data3, data4)
 }
 
-async function appendPage(movies){
+function appendPage(movies){
+    const oldLoadMoreButton = document.querySelector(".load-more-btn")
+    oldLoadMoreButton.remove()
+
     movies.forEach((movie,idx) =>{
         const { title, id, poster_path, vote_average, overview, release_date} = movie
         const movieEl = document.createElement('div')
@@ -78,13 +81,14 @@ async function appendPage(movies){
             </div>
         `
         main.appendChild(movieEl)
-
+        let x = (moviePages-1)*20;
+        console.log(x)
         const poster = document.querySelectorAll(".poster")
-        poster[idx].addEventListener('click', ()=> {
+        poster[idx+x].addEventListener('click', ()=> {
             getDetails(id);
         },{once:true})
 
-    })
+        })
         const loadMoreBtn = document.createElement('button')
         loadMoreBtn.classList.add('load-more-btn')
         loadMoreBtn.addEventListener('click', () => {
@@ -95,6 +99,7 @@ async function appendPage(movies){
         main.appendChild(loadMoreBtn)
 }
 
+
 function showMovies(movies){
     main.innerHTML = ''
 
@@ -102,12 +107,11 @@ function showMovies(movies){
         const { title, id, poster_path, vote_average, overview, release_date} = movie
         const movieEl = document.createElement('div')
         movieEl.classList.add('movie') 
-
         let overviewShort = getFirstFour(overview)
         movieEl.innerHTML = 
         `
             <div class="movie-card">
-                <img class="poster" src="${IMG_PATH + poster_path}" alt="${title}">
+                ${checkPoster(poster_path, title)}
                  <div class="overview">
                     <h3>Overview</h3>
                     ${overviewShort}
@@ -138,6 +142,7 @@ function showMovies(movies){
 }
 
 function showDetails(details,images,videos,credits){
+    main.innerHTML = ''
     
     const popularMovies = document.querySelectorAll(".movie")
     popularMovies.forEach(card => {
@@ -167,7 +172,7 @@ function showDetails(details,images,videos,credits){
         `
             <div class="header" style="background-image:url(${IMG_PATH}${images.backdrops[0].file_path})">
                 <div class="custom-bg"></div>
-                <img class="poster" src="${IMG_PATH + poster_path}" alt="${title}">
+                ${checkPoster(poster_path, title)}
                 <div class="movie-info">
                     <h3>${title} (${release_date.slice(0,4)})</h3>
                     <h4>${release_date} (US)
@@ -235,7 +240,7 @@ function makeCreditList(credits){
     let out = ""
     for(let i = 0; i < 5; i++){
         out += `<li class="credit-card">
-                    <img class="actor-photo" src="${CREDIT_IMG_PATH + credits.cast[i].profile_path}" alt="${credits.cast[i].name}">
+                ${checkCredits(credits, i)}
                    <div class="actor-info">
                         <h5>${credits.cast[i].name}</h5>
                         <h6>${credits.cast[i].character}</h6>
@@ -314,3 +319,20 @@ form.addEventListener('submit', (e) =>{
         window.location.reload()
     }
 })
+
+
+function checkPoster(posterPath,title){
+    if(posterPath === null){
+       return `<img class="poster" src="images/posterBackup.jpg" alt="${title}"></img>`
+    }else {
+        return `<img class="poster" src="${IMG_PATH + posterPath}" alt="${title}"></img>`
+    }
+}
+
+function checkCredits(credits, i){
+    if(credits.cast[i].profile_path === null){
+       return `<img class="actor-photo" src="images/castBackup.jpg" alt="${credits.cast[i].name}"></img>`
+    }else {
+        return `<img class="actor-photo" src="${CREDIT_IMG_PATH + credits.cast[i].profile_path}" alt="${credits.cast[i].name}"></img>`
+    }
+}

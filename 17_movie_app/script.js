@@ -4,29 +4,41 @@ const IMG_PATH = 'https://image.tmdb.org/t/p/w1280'
 const CREDIT_IMG_PATH = 'https://image.tmdb.org/t/p/w185'
 const SEARCH_API = 'https://api.themoviedb.org/3/search/movie?api_key=3fd2be6f0c70a2a598f084ddfb75487c&page=1&query="'
 
-const main = document.getElementById('main')
+const contentContainer = document.querySelector('.content-wrapper')
 const form = document.getElementById('form')
 const search = document.getElementById('search')
 const homeBtn = document.getElementById('home-btn')
 
 let moviePages = 1
 
-//Get initial movies
 getMovies(API_URL)
-homeBtn.addEventListener('click', show)
 
-function show(){
-    moviePages = 1
-    const detailCard = document.querySelectorAll(".movie-detail")
-    detailCard.forEach(card => {
-        card.remove()
-    })
+//Header functionality
+
+homeBtn.addEventListener('click', ()=>{
     getMovies(API_URL)
-}
+})
+
+form.addEventListener('submit', (e) =>{
+    e.preventDefault()
+
+    const searchTerm = search.value
+
+    if(searchTerm && searchTerm !== ''){
+        getMovies(SEARCH_API + searchTerm)
+
+        search.value = ''
+    } else {
+        window.location.reload()
+    }
+})
 
 
+//Fetch Data Functions
 
 async function getMovies(url) {
+    moviePages = 1
+
     const res = await fetch(url)
     const data = await res.json()
     showMovies(data.results)
@@ -37,7 +49,6 @@ async function getMoreMovies(url){
     const data = await res.json()
     appendPage(data.results)
 }
-
 
 async function getDetails(movieId) {
     const res1 = await fetch(`https://api.themoviedb.org/3/movie/${movieId}?api_key=3fd2be6f0c70a2a598f084ddfb75487c&language=en-US`)
@@ -55,59 +66,16 @@ async function getDetails(movieId) {
     showDetails(data1, data2, data3, data4)
 }
 
-function appendPage(movies){
-    const oldLoadMoreButton = document.querySelector(".load-more-btn")
-    oldLoadMoreButton.remove()
-
-    movies.forEach((movie,idx) =>{
-        const { title, id, poster_path, vote_average, overview, release_date} = movie
-        const movieEl = document.createElement('div')
-        movieEl.classList.add('movie') 
-
-        let overviewShort = getFirstFour(overview)
-        movieEl.innerHTML = 
-        `
-            <div class="movie-card">
-                <img class="poster" src="${IMG_PATH + poster_path}" alt="${title}">
-                 <div class="overview">
-                    <h3>Overview</h3>
-                    ${overviewShort}
-                </div>
-                <span class="${getClassByRate(vote_average)}">${checkVote(vote_average*10)}</span>
-                <div class="movie-info">
-                    <h3>${title}</h3>
-                    <h4>${release_date}</h4>
-                </div>                
-            </div>
-        `
-        main.appendChild(movieEl)
-        let x = (moviePages-1)*20;
-        console.log(x)
-        const poster = document.querySelectorAll(".poster")
-        poster[idx+x].addEventListener('click', ()=> {
-            getDetails(id);
-        },{once:true})
-
-        })
-        const loadMoreBtn = document.createElement('button')
-        loadMoreBtn.classList.add('load-more-btn')
-        loadMoreBtn.addEventListener('click', () => {
-            moviePages++
-            getMoreMovies(`https://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&api_key=3fd2be6f0c70a2a598f084ddfb75487c&page=${moviePages}`);
-        })
-        loadMoreBtn.innerHTML = "Load More"
-        main.appendChild(loadMoreBtn)
-}
-
+//DOM Manipulation Functions
 
 function showMovies(movies){
-    main.innerHTML = ''
+    contentContainer.innerHTML = ''
 
     movies.forEach((movie,idx) =>{
         const { title, id, poster_path, vote_average, overview, release_date} = movie
         const movieEl = document.createElement('div')
         movieEl.classList.add('movie') 
-        let overviewShort = getFirstFour(overview)
+        let overviewShort = shortenOverview(overview)
         movieEl.innerHTML = 
         `
             <div class="movie-card">
@@ -123,7 +91,7 @@ function showMovies(movies){
                 </div>                
             </div>
         `
-        main.appendChild(movieEl)
+        contentContainer.appendChild(movieEl)
 
         const poster = document.querySelectorAll(".poster")
         poster[idx].addEventListener('click', ()=> {
@@ -138,18 +106,20 @@ function showMovies(movies){
             getMoreMovies(`https://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&api_key=3fd2be6f0c70a2a598f084ddfb75487c&page=${moviePages}`);
         })
         loadMoreBtn.innerHTML = "Load More"
-        main.appendChild(loadMoreBtn)
+        contentContainer.appendChild(loadMoreBtn)
 }
 
 function showDetails(details,images,videos,credits){
-    main.innerHTML = ''
+    contentContainer.innerHTML = ''
     
     const popularMovies = document.querySelectorAll(".movie")
     popularMovies.forEach(card => {
         card.style.display = "none";
     })
-        const { title, id, poster_path, vote_average, overview, release_date, budget, genres,runtime} = details
+        const { title,  poster_path, vote_average, overview, release_date, budget, genres,runtime} = details
+        const trailerAvailable = checkTrailer(videos)
         const movieEl = document.createElement('div')
+        
         let videoKey
         try{
             videoKey = videos.results[0].key
@@ -159,24 +129,25 @@ function showDetails(details,images,videos,credits){
         movieEl.classList.add('movie-detail') 
 
 
+
+
         // add to markup later -- score
         // add later - button for play trailer
         //                 <button id="play-trailer-btn" class="play-trailer-btn" onclick="playVideo()">Play Trailer</button>
-        console.log(credits.cast[0].profile_path)
-        console.log(credits)
+
 
         creditList = makeCreditList(credits)
 
-        if(videoKey !== 0){
+        if(trailerAvailable){
              movieEl.innerHTML = 
         `
-            <div class="header" style="background-image:url(${IMG_PATH}${images.backdrops[0].file_path})">
+            <div class="detail-header" style="background-image:url(${IMG_PATH}${images.backdrops[0].file_path})">
                 <div class="custom-bg"></div>
                 ${checkPoster(poster_path, title)}
                 <div class="movie-info">
                     <h3>${title} (${release_date.slice(0,4)})</h3>
                     <h4>${release_date} (US)
-                        <span class="genres">${getGenres(genres)}</span>
+                        <span class="genres">${makeGenreList(genres)}</span>
                         <span class="runtime">${formatRuntime(runtime)}</span>
                     <button onclick="showTrailer()">Play trailer</button>
                     </h4>
@@ -192,18 +163,18 @@ function showDetails(details,images,videos,credits){
                     <h6>Budget: ${formatBigNumber(budget)}$</h6>
                 </div>    
             </div>
-            <ul>${creditList}</ul>
+            <ul class="credits-list">${creditList}</ul>
         `
         }else{
              movieEl.innerHTML = 
         `
-            <div class="header" style="background-image:url(${IMG_PATH}${images.backdrops[0].file_path})">
+            <div class="detail-header" style="background-image:url(${IMG_PATH}${images.backdrops[0].file_path})">
                 <div class="custom-bg"></div>
                 <img class="poster" src="${IMG_PATH + poster_path}" alt="${title}">
                 <div class="movie-info">
                     <h3>${title} (${release_date.slice(0,4)})</h3>
                     <h4>${release_date} (US)
-                        <span class="genres">${getGenres(genres)}</span>
+                        <span class="genres">${makeGenreList(genres)}</span>
                         <span class="runtime">${formatRuntime(runtime)}</span>
     
                     </h4>
@@ -213,14 +184,58 @@ function showDetails(details,images,videos,credits){
                     <h6>Budget: ${formatBigNumber(budget)}$</h6>
                 </div>    
             </div>
-            <ul>${creditList}</ul>
+            <ul class="credits-list">${creditList}</ul>
         `
         }
 
 
-        main.appendChild(movieEl)
-
+        contentContainer.appendChild(movieEl)
 }
+
+
+function appendPage(movies){
+    const oldLoadMoreButton = document.querySelector(".load-more-btn")
+    oldLoadMoreButton.remove()
+
+    movies.forEach((movie,idx) =>{
+        const { title, id, poster_path, vote_average, overview, release_date} = movie
+        const movieEl = document.createElement('div')
+        movieEl.classList.add('movie') 
+
+        let overviewShort = shortenOverview(overview)
+        movieEl.innerHTML = 
+        `
+            <div class="movie-card">
+                <img class="poster" src="${IMG_PATH + poster_path}" alt="${title}">
+                 <div class="overview">
+                    <h3>Overview</h3>
+                    ${overviewShort}
+                </div>
+                <span class="${getClassByRate(vote_average)}">${checkVote(vote_average*10)}</span>
+                <div class="movie-info">
+                    <h3>${title}</h3>
+                    <h4>${release_date}</h4>
+                </div>                
+            </div>
+        `
+        contentContainer.appendChild(movieEl)
+        const poster = document.querySelectorAll(".poster")
+        poster[idx+(moviePages-1)*20].addEventListener('click', ()=> {
+            getDetails(id);
+        },{once:true})
+
+        })
+        const loadMoreBtn = document.createElement('button')
+        loadMoreBtn.classList.add('load-more-btn')
+        loadMoreBtn.addEventListener('click', () => {
+            moviePages++
+            getMoreMovies(`https://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&api_key=3fd2be6f0c70a2a598f084ddfb75487c&page=${moviePages}`);
+        })
+        loadMoreBtn.innerHTML = "Load More"
+        contentContainer.appendChild(loadMoreBtn)
+}
+
+//Supplementary Functions
 
 function showTrailer(){
     const trailer = document.getElementById("trailer")
@@ -237,17 +252,14 @@ function showTrailer(){
 }
 
 function makeCreditList(credits){
-    let out = ""
+    let creditsList = ""
     for(let i = 0; i < 5; i++){
-        out += `<li class="credit-card">
+        creditsList += `<li class="credits-card">
                 ${checkCredits(credits, i)}
-                   <div class="actor-info">
-                        <h5>${credits.cast[i].name}</h5>
-                        <h6>${credits.cast[i].character}</h6>
-                   </div>
+                  
                 </li>`
     }
-    return out
+    return creditsList
 }
 
 function formatRuntime(runtime){
@@ -255,7 +267,7 @@ function formatRuntime(runtime){
 }
 
 
-function getGenres(genres){
+function makeGenreList(genres){
     let genreList = ""
     genres.forEach(genre => {
         genreList += genre.name + ", "
@@ -265,27 +277,27 @@ function getGenres(genres){
 }
 
 function formatBigNumber(num) {
-    num = num.toString()
-    let out = num;
+    let result = num.toString()
+
     for(let i=(num.length-3); i>0; i-=3){
-        out = out.slice(0,i) + "," + out.slice(i)
+        result = result.slice(0,i) + "," + result.slice(i)
     }
-    return out
+    return result
 }
 
 
-function getFirstFour(sentence){
+function shortenOverview(overview){
     let commas = 0
-    for(let i=0; i < sentence.length; i++){
+    for(let i=0; i < overview.length; i++){
         if(commas === 1)
         {
-            return sentence.slice(0,i)
+            return overview.slice(0,i)
         }
-        if(sentence[i] === "." && sentence.slice(i-2,i) !== "Dr" && sentence.slice(i-1,i) > "a"){
+        if(overview[i] === "." && overview.slice(i-2,i) !== "Dr" && overview.slice(i-1,i) > "a"){
             commas++
         }
     }
-    return sentence
+    return overview
 }
 
 function getClassByRate(vote) {
@@ -306,21 +318,6 @@ function checkVote(vote){
     }
 }
 
-form.addEventListener('submit', (e) =>{
-    e.preventDefault()
-
-    const searchTerm = search.value
-
-    if(searchTerm && searchTerm !== ''){
-        getMovies(SEARCH_API + searchTerm)
-
-        search.value = ''
-    } else {
-        window.location.reload()
-    }
-})
-
-
 function checkPoster(posterPath,title){
     if(posterPath === null){
        return `<img class="poster" src="images/posterBackup.jpg" alt="${title}"></img>`
@@ -331,8 +328,34 @@ function checkPoster(posterPath,title){
 
 function checkCredits(credits, i){
     if(credits.cast[i].profile_path === null){
-       return `<img class="actor-photo" src="images/castBackup.jpg" alt="${credits.cast[i].name}"></img>`
+        const d = 
+        `
+         <img class="actor-photo" src="images/castBackup.jpg" alt="${credits.cast[i].name}"></img>
+                <div class="actor-info">
+                        <h5>${credits.cast[i].name}</h5>
+                        <h6>${credits.cast[i].character}</h6>
+                   </div>
+        `
+       return d
+       
     }else {
-        return `<img class="actor-photo" src="${CREDIT_IMG_PATH + credits.cast[i].profile_path}" alt="${credits.cast[i].name}"></img>`
+        const a = 
+        `
+        <img class="actor-photo" src="${CREDIT_IMG_PATH + credits.cast[i].profile_path}" alt="${credits.cast[i].name}"></img>
+            <div class="actor-info">
+                <h5>${credits.cast[i].name}</h5>
+                <h6>${credits.cast[i].character}</h6>
+            </div>
+        `
+        
+        return a
+    }
+}
+
+function checkTrailer(videos){
+    if(videos.results[0] !== undefined){
+        return true
+    }else{
+        return false
     }
 }

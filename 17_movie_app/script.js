@@ -7,7 +7,6 @@ const SEARCH_API = 'https://api.themoviedb.org/3/search/movie?api_key=3fd2be6f0c
 const contentContainer = document.querySelector('.content-wrapper')
 const form = document.getElementById('form')
 const search = document.getElementById('search')
-const homeBtn = document.getElementById('home-btn')
 
 let moviePages = 1;
 let onlyOnce = false;
@@ -15,11 +14,6 @@ let onlyOnce = false;
 getMovies(API_URL)
 
 //Header functionality
-
-homeBtn.addEventListener('click', ()=>{
-    getMovies(API_URL)
-})
-
 form.addEventListener('submit', (e) =>{
     e.preventDefault()
 
@@ -151,7 +145,7 @@ function showDetails(details,images,videos,credits){
                         <h4>${release_date} (US)
                             <span class="genres">${makeGenreList(genres)}</span>
                             <span class="runtime">${formatRuntime(runtime)}</span>
-                        <button onclick="showTrailer()">Play trailer</button>
+                        <button class="trailer-btn" onclick="showTrailer()">Play trailer</button>
                         </h4>
                         <ul class="detail-list">
                             <li>

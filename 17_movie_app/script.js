@@ -21,7 +21,6 @@ form.addEventListener('submit', (e) =>{
 
     if(searchTerm && searchTerm !== ''){
         getMovies(SEARCH_API + searchTerm)
-
         search.value = ''
     } else {
         window.location.reload()
@@ -33,16 +32,16 @@ form.addEventListener('submit', (e) =>{
 
 async function getMovies(url) {
     moviePages = 1
-
     const res = await fetch(url)
     const data = await res.json()
-    showMovies(data.results)
+    showMovies(data.results, data.total_pages, url)
 }
 
 async function getMoreMovies(url){
     const res = await fetch(url)
     const data = await res.json()
-    appendPage(data.results)
+    console.log(data)
+    appendPage(data.results, data.total_pages, url)
 }
 
 async function getDetails(movieId) {
@@ -66,7 +65,7 @@ async function getDetails(movieId) {
 
 //DOM Manipulation Functions
 
-function showMovies(movies){
+function showMovies(movies, pages, url){
     contentContainer.innerHTML = ''
 
     movies.forEach((movie,idx) =>{
@@ -97,14 +96,20 @@ function showMovies(movies){
         })
 
     })
-        const loadMoreBtn = document.createElement('button')
-        loadMoreBtn.classList.add('load-more-btn')
-        loadMoreBtn.addEventListener('click', () => {
-            moviePages++
-            getMoreMovies(`https://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&api_key=3fd2be6f0c70a2a598f084ddfb75487c&page=${moviePages}`);
-        })
-        loadMoreBtn.innerHTML = "Load More"
-        contentContainer.appendChild(loadMoreBtn)
+        if(pages > 1){
+            loadMoreBtn = document.createElement('button')
+            loadMoreBtn.classList.add('load-more-btn')
+            loadMoreBtn.addEventListener('click', () => {
+                moviePages++
+                url = url.replace(`page=${moviePages-1}`, `page=${moviePages}`)
+                getMoreMovies(`${url}`);
+            })
+            loadMoreBtn.innerHTML = "Load More"
+            contentContainer.appendChild(loadMoreBtn)
+        } else {
+            contentContainer.innerHTML = 'No results found'
+            contentContainer.style = "color: white; margin-top: 4rem;"
+        }
 }
 
 function showDetails(details,images,videos,credits){
@@ -127,14 +132,14 @@ function showDetails(details,images,videos,credits){
         movieEl.classList.add('movie-detail') 
 
 
-        creditList = makeCreditList(credits)
+        // creditList = makeCreditList(credits)
                 // <ul class="credits-list">${creditList}</ul>
 
         if(trailerAvailable){
              movieEl.innerHTML = 
         `
                 <img class="close-btn" onclick="removeDetail()" src="images/close.png" width="32" height="32"></img>
-                <div class="detail-header" style="background-image:url(${IMG_PATH}${images.backdrops[0].file_path})">
+                ${checkBackdrop(images)}
                     <div class="custom-bg"></div>
                     ${checkPoster(poster_path, title)}
                     <div class="movie-info">
@@ -182,7 +187,9 @@ function showDetails(details,images,videos,credits){
              movieEl.innerHTML = 
         `
             <img class="close-btn" onclick="removeDetail()" src="images/close.png" width="32" height="32"></img>
-            <div class="detail-header" style="background-image:url(${IMG_PATH}${images.backdrops[0].file_path})">
+
+                           ${checkBackdrop(images)}
+
                 <div class="custom-bg"></div>
                 <img class="poster" src="${IMG_PATH + poster_path}" alt="${title}">
                 <div class="movie-info">
@@ -224,10 +231,9 @@ function showDetails(details,images,videos,credits){
 }
 
 
-function appendPage(movies){
+function appendPage(movies, pages, url){
     const oldLoadMoreButton = document.querySelector(".load-more-btn")
     oldLoadMoreButton.remove()
-
     movies.forEach((movie,idx) =>{
         const { title, id, poster_path, vote_average, overview, release_date} = movie
         const movieEl = document.createElement('div')
@@ -237,7 +243,7 @@ function appendPage(movies){
         movieEl.innerHTML = 
         `
             <div class="movie-card">
-                <img class="poster" src="${IMG_PATH + poster_path}" alt="${title}">
+                ${checkPoster(poster_path, title)}
                  <div class="overview">
                     <h3>Overview</h3>
                     ${overviewShort}
@@ -256,14 +262,20 @@ function appendPage(movies){
         },{once:true})
 
         })
-        const loadMoreBtn = document.createElement('button')
-        loadMoreBtn.classList.add('load-more-btn')
-        loadMoreBtn.addEventListener('click', () => {
-            moviePages++
-            getMoreMovies(`https://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&api_key=3fd2be6f0c70a2a598f084ddfb75487c&page=${moviePages}`);
-        })
-        loadMoreBtn.innerHTML = "Load More"
-        contentContainer.appendChild(loadMoreBtn)
+        console.log(pages, moviePages)
+        if(pages > moviePages){
+            const loadMoreBtn = document.createElement('button')
+            loadMoreBtn.classList.add('load-more-btn')
+            loadMoreBtn.addEventListener('click', () => {
+                moviePages++
+                url = url.replace(`page=${moviePages-1}`, `page=${moviePages}`)
+                getMoreMovies(`${url}`);
+            })
+             loadMoreBtn.innerHTML = "Load More"
+                contentContainer.appendChild(loadMoreBtn)
+        }
+        
+
 }
 
 //Supplementary Functions
@@ -312,8 +324,6 @@ function formatBigNumber(num) {
     let length = result.length
 
     for(let i=(length-3); i>0; i-=3){
-        console.log(result)
-
         result = result.slice(0,i) + "," + result.slice(i)
     }
     return result
@@ -391,6 +401,14 @@ function checkTrailer(videos){
         return true
     }else{
         return false
+    }
+}
+
+function checkBackdrop(images){
+    if(images.backdrops[0] != undefined){
+        return `<div class="detail-header" style="background-image:url(${IMG_PATH + images.backdrops[0].file_path})">`
+    }else{
+        return `<div class="detail-header">`
     }
 }
 

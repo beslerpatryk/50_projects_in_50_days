@@ -7,6 +7,7 @@ const SEARCH_API = 'https://api.themoviedb.org/3/search/movie?api_key=3fd2be6f0c
 const contentContainer = document.querySelector('.content-wrapper')
 const form = document.getElementById('form')
 const search = document.getElementById('search')
+const input = document.querySelector('input')
 
 let moviePages = 1;
 let onlyOnce = false;
@@ -14,6 +15,19 @@ let onlyOnce = false;
 getMovies(API_URL)
 
 //Header functionality
+
+input.addEventListener('keyup', (e) => {
+    let searchTerm = e.target.value
+    let emptyArray = []
+
+    if(searchTerm && searchTerm !== ''){
+        searchMovies(SEARCH_API + searchTerm).then((results) => {
+                console.log(results)
+        })
+    }
+    
+})
+
 form.addEventListener('submit', (e) =>{
     e.preventDefault()
 
@@ -30,6 +44,18 @@ form.addEventListener('submit', (e) =>{
 
 //Fetch Data Functions
 
+async function searchMovies(url){
+    const res = await fetch(url)
+    const data = await res.json()
+    const results = []
+    for(let i=0; i < 5; i++){
+        if(!results.includes(data.results[i].title)){
+            results.unshift(data.results[i].title)
+        }
+    }
+    return results
+}
+
 async function getMovies(url) {
     moviePages = 1
     const res = await fetch(url)
@@ -40,7 +66,6 @@ async function getMovies(url) {
 async function getMoreMovies(url){
     const res = await fetch(url)
     const data = await res.json()
-    console.log(data)
     appendPage(data.results, data.total_pages, url)
 }
 

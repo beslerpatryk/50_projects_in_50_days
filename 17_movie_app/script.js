@@ -8,6 +8,8 @@ const contentContainer = document.querySelector('.content-wrapper')
 const form = document.getElementById('form')
 const search = document.getElementById('search')
 const input = document.querySelector('input')
+const suggestions = document.querySelector('.suggestions')
+var previousSearchTerm = ""
 
 let moviePages = 1;
 let onlyOnce = false;
@@ -16,16 +18,41 @@ getMovies(API_URL)
 
 //Header functionality
 
-input.addEventListener('keyup', (e) => {
-    let searchTerm = e.target.value
-    let emptyArray = []
-
-    if(searchTerm && searchTerm !== ''){
-        searchMovies(SEARCH_API + searchTerm).then((results) => {
-                console.log(results)
-        })
+const searchObj = {
+    term: "",
+    previousTerm: "",
+    run(){
+        if(this.term !== this.previousTerm){
+            suggestions.innerHTML = ""
+            if(this.term && this.term !== ''){
+                searchMovies(SEARCH_API + this.term).then((results) => {
+                    results.forEach(result =>{
+                        let entry = document.createElement("li")
+                        entry.innerText = result
+                        entry.addEventListener('click', ()=>{
+                            search.value = result
+                            getMovies(SEARCH_API + search.value)
+                            suggestions.innerHTML = ""
+                            search.value = ``
+                        })
+                        suggestions.append(entry)
+                    })
+                })
+            }
+        }
+        this.previousTerm = this.term
     }
-    
+}
+
+let debounceTimeout
+let searchTerm = ""
+input.addEventListener('keyup', e => {
+    clearTimeout(debounceTimeout)
+    searchTerm = e.target.value
+    debounceTimeout = setTimeout(()=>{
+        searchObj.term = searchTerm 
+        searchObj.run()
+    },200)
 })
 
 form.addEventListener('submit', (e) =>{
@@ -47,10 +74,16 @@ form.addEventListener('submit', (e) =>{
 async function searchMovies(url){
     const res = await fetch(url)
     const data = await res.json()
+    var counter = 0;
     const results = []
-    for(let i=0; i < 5; i++){
+    for(let i=0; i < data.results.length; i++){
         if(!results.includes(data.results[i].title)){
             results.unshift(data.results[i].title)
+        }
+        if(counter<4){
+            counter++
+        }else{
+            return results
         }
     }
     return results
@@ -60,6 +93,7 @@ async function getMovies(url) {
     moviePages = 1
     const res = await fetch(url)
     const data = await res.json()
+    console.log(data)
     showMovies(data.results, data.total_pages, url)
 }
 
@@ -131,7 +165,7 @@ function showMovies(movies, pages, url){
             })
             loadMoreBtn.innerHTML = "Load More"
             contentContainer.appendChild(loadMoreBtn)
-        } else {
+        } else if (pages == 0){
             contentContainer.innerHTML = 'No results found'
             contentContainer.style = "color: white; margin-top: 4rem;"
         }
@@ -250,8 +284,6 @@ function showDetails(details,images,videos,credits){
             </div>
         `
         }
-
-
         contentContainer.appendChild(movieEl)
 }
 

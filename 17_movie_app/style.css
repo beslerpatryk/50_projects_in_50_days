@@ -60,6 +60,40 @@ header > a {
 	outline: none;
 }
 
+.suggestions-container {
+	position: relative;
+}
+
+.suggestions {
+	position: absolute;
+	top: 5px;
+	left: 0;
+	padding: 0.5rem 0.5rem;
+	width: 100%;
+	background-color: rgba(30, 33, 75, 0.95);
+
+	border-radius: 5px;
+	list-style: none;
+	z-index: 150;
+	overflow: hidden;
+	transition: ease 0.3s;
+}
+
+.suggestions:empty {
+	background-color: transparent;
+	transition: ease 0.3s;
+}
+
+.suggestions li {
+	color: white;
+	cursor: pointer;
+	opacity: 0.8;
+}
+
+.suggestions li:hover {
+	opacity: 1;
+}
+
 /* Content Container */
 
 .content-wrapper {

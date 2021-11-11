@@ -243,7 +243,6 @@ span.red {
 	box-shadow: 0 4px 5px rgba(0, 0, 0, 0.2);
 	position: relative;
 	display: flex;
-	height: 500px;
 	overflow: hidden;
 	background-position: right -200px top;
 	background-size: cover;
@@ -277,6 +276,7 @@ span.red {
 .poster {
 	z-index: 3;
 	min-height: 450px;
+	max-height: 500px;
 }
 
 .movie-detail span {
@@ -387,6 +387,42 @@ footer a {
 .stop-scrolling {
 	height: 100%;
 	overflow: hidden;
+}
+
+@media (max-width: 1200px) {
+	header {
+		padding: 2rem;
+	}
+
+	.logo {
+		transform: scale(1);
+	}
+
+	.search {
+		font-family: serif;
+		padding: 0.5rem;
+	}
+
+	#movie-detail {
+		max-width: 90vw;
+	}
+
+	.detail-header {
+		padding: 1rem;
+	}
+
+	.detail-header .movie-info {
+		margin: 0;
+	}
+
+	#movie-detail .poster {
+		display: none;
+	}
+
+	.stop-scrolling {
+		height: initial;
+		overflow: initial;
+	}
 }
 
 @media (min-width: 2000px) {

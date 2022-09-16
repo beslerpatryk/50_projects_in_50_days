@@ -24,6 +24,7 @@ body {
   position: absolute;
   top:0;
   left:0;
+  transition: transform 0.5s ease-in-out;
 }
 
 .left-slide > div {
@@ -48,6 +49,7 @@ body {
   top: 0;
   left: 35%;
   width:65%;
+  transition: transform 0.5s ease-in-out;
 }
 
 .right-slide > div {
@@ -56,6 +58,23 @@ body {
   background-position: center center;
   height: 100%;
   width:100%;
+}
+
+button {
+  background-color: #fff;
+  border: none;
+  padding: 2rem;
+  color: #aaa;
+}
+
+button:hover {
+  color: #222;
+  cursor: pointer;
+  transform: scale(105%);
+}
+
+button:focus {
+  outline: none;
 }
 
 .slider-container .action-buttons button {
@@ -67,10 +86,14 @@ body {
 
 .slider-container .action-buttons .up-button {
   transform: translateY(-100%);
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
 }
 
 .slider-container .action-buttons .down-button {
   transform: translateX(-100%);
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
 }
 
 

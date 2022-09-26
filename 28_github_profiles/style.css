@@ -1,0 +1,129 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;400&display=swap');
+
+:root{
+  /* --primary: #092838;
+  --secondary: #1c67a1;
+  --accent: #00daea;
+  --font: #fff; */
+
+    --primary: #222222;
+    --secondary: #2f2e3d;
+    --accent: #256cd7;
+    --font: #fff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--primary);
+  color: var(--font);
+  font-family: 'Poppins', sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  overflow: hidden;
+  margin: 0;
+}
+
+main {
+  flex-direction: column;
+  align-items: center;
+  max-width: 700px;
+  margin: 0 1.5rem;
+}
+
+.user-form{
+  width: 100%;
+}
+
+.search-box {
+  width: 100%;
+  background-color: var(--secondary);
+  color: inherit;
+  font-family: inherit;
+  padding: 1rem;
+  font-size: 1.2rem;
+  border: none;
+  box-shadow: 5px 5px 35px rgba(0,0,0,0.3);
+}
+
+.search-box:focus{
+  outline: none;
+}
+
+.search-box::placeholder {
+  color: inherit;
+  opacity: 50%;
+}
+
+.card {
+  display: flex;
+  background-color: var(--secondary);
+  margin-top: 2rem;
+  padding: 2rem;
+  box-shadow: 5px 5px 35px rgba(0, 0, 0, 0.3);
+}
+
+.avatar-container {
+  width: 150px;
+  height: 150px;
+  padding: 1rem;
+  margin-right: 2rem;
+}
+
+.avatar {
+  border-radius: 50%;
+  border: 2px solid var(--accent);
+}
+
+.stats {
+  list-style: none;
+  display: flex;
+  gap: 1rem;
+  margin: 1rem 0;
+  padding: 0;
+}
+
+.repos {
+  display: flex;
+  gap: 1rem;
+}
+
+.repo {
+  font-size: 0.8rem;
+  margin: 0 ;
+  color: inherit;
+  text-decoration: none;
+  background-color: var(--accent);
+  padding: 0.2rem 0.5rem;
+}
+
+@media (max-width: 600px){
+  .avatar-container {
+    margin: 0;
+  }
+
+  .card {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+
+  .card h2 {
+    margin: 0;
+  }
+
+  .stats {
+    justify-content: center;
+  }
+
+  .repos {
+    justify-content: center;
+  }
+
+}

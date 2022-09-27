@@ -13,24 +13,27 @@ body {
   height: 100vh;
   overflow: hidden;
   margin: 0;
-  background: darksalmon;
+  background: #101922;
+  color: #ffe715;
 }
 
 .speed-form {
   position: absolute;
   bottom: 3rem;
-  background: rgba(0,0,0,0.1);
   padding: 10px 20px;
   font-size: 18px;
+  border-radius: 5px;
 }
 
 input {
   width: 50px;
   padding: 5px;
   font-size: 18px;
-  background:darksalmon;
+  background: rgba(255, 255, 255, 0.2);
   border: none;
   text-align: center;
+  color: inherit;
+  border-radius: 5px;
 }
 
 input:focus {

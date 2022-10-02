@@ -154,3 +154,4 @@ console.log(foo(5));
 
     document.body.append(note)
 }
+

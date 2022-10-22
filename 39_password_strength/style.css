@@ -16,10 +16,10 @@ body {
   background: url("background.jpg") no-repeat center center ;
   background-size: cover;
   position: absolute;
-  top: -20px;
-  bottom: -20px;
-  left: -20px;
-  right: -20px;
+  top: -40px;
+  bottom: -40px;
+  left: -40px;
+  right: -40px;
   z-index: -1;
   filter: blur(20px);
 

@@ -2,6 +2,7 @@
 
 * {
   box-sizing: border-box;
+  margin: 0;
 }
 
 body {
@@ -10,7 +11,81 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100vh;
+  min-height: 100vh;
   overflow: hidden;
   margin: 0;
+  background-color: #f6f6f6;
+}
+
+.container {
+  border-radius: 5px;
+  box-shadow: 2px 2px 5px 1px rgba(0,0,0,0.25);
+  width: 300px;
+}
+
+.top-bar {
+  color: white;
+  border-radius: 5px 5px 0 0;
+  background-color: #3e57db;
+  padding: 1.5rem 1.5rem 2rem 1.5rem;
+}
+.top-bar h1{
+  font-size: 1rem;
+  margin: 0;
+}
+
+.top-bar p {
+  font-size: 0.8rem;
+  margin-top: 0.3rem;
+  margin-bottom: 1rem;
+}
+
+.input-search {
+  font-size: 0.9rem;
+  font-weight: 700;
+  background-color: rgba(0,0,0,0.25);
+  border: none;
+  color: white;
+  width: 100%;
+  border-radius: 25px;
+  padding: 0.5rem 1rem;
+}
+
+.user-list {
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  border-radius: 0 0 5px 5px;
+  list-style: none;
+  padding: 0;
+  max-height: 330px;
+  overflow: scroll;
+}
+
+.profile {
+  padding: 1rem 1rem;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid rgb(212, 212, 212);
+  gap: 1rem;
+}
+
+.profile img {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.user-info h2 {
+  font-size: 1rem;
+  margin-bottom: 0.8rem;
+}
+
+.user-info p {
+  font-size: 0.8rem;
+}
+
+.profile.hide {
+  display: none;
 }

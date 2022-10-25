@@ -4,15 +4,24 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" referrerpolicy="no-referrer" /> -->
     <link rel="icon" href="favicon.ico" type="image/x-icon"/> 
     <link rel="stylesheet" href="style.css">
-    <title>My Project</title>
+    <title>Life User Filter</title>
 
 </head>
 <body>
-    <h1>Project Starter</h1>
-
+    <div class="container">
+        <div class="top-bar">
+            <h1>Life User Filter</h1>
+            <p>Search by name and/or location</p>
+            <input type="text" placeholder="Search" class="input-search" id="filter">
+        </div>
+        <ul class="user-list" id="result">
+            <li class="profile" >
+                <h3>Loading...</h3>
+            </li>
+        </ul>
+    </div>
     <script src="script.js"></script>
 </body>
 </html>
